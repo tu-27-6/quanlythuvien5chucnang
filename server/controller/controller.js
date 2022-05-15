@@ -2,8 +2,8 @@ var Userdb = require('../model/model')
 
 
 exports.create = (req, res) => {
-    if(!req.body) {
-        res.send({message: 'Can not be empty'})
+    if (!req.body) {
+        res.send({ message: 'Can not be empty' })
         return
     }
 
@@ -16,56 +16,78 @@ exports.create = (req, res) => {
     user
         .save(user)
         .then(data => {
-            res.send(data)
+            // res.send(data)
+            res.redirect('/')
         })
         .catch(e => {
-            res.send({message: e.message})
+            res.send({ message: e.message })
         })
 }
 
 exports.find = (req, res) => {
-    Userdb.find()
-        .then(user => {
-            res.send(user)
-        })
-        .catch(e => {
-            res.send({message: e.message})
-        })
+
+    if (req.query.id) {
+        const id = req.query.id
+
+        Userdb.findById(id)
+            .then(data => {
+                if(!data) {
+                    res.send({message: 'Not found user with id: ' + id})
+                }
+                else {
+                    res.send(data)
+                }
+            })
+            .catch(e => {
+                res.send({message: e.message})
+            })
+    }
+    else {
+        Userdb.find()
+            .then(user => {
+                res.send(user)
+            })
+            .catch(e => {
+                res.send({ message: e.message })
+            })
+    }
+
+
 }
 
 exports.update = (req, res) => {
-    if(!req.body) {
-        return res.send({message: 'Can not be empty'})
+    if (!req.body) {
+        return res.send({ message: 'Can not be empty' })
     }
 
     const id = req.params.id
     Userdb.findByIdAndUpdate(id, req.body)
         .then(data => {
-            if(!data) {
-                res.send({message: 'User not found'})
+            if (!data) {
+                res.send({ message: 'User not found' })
             }
             else {
                 res.send(data)
             }
         })
         .catch(e => {
-            res.send({message: 'Update error'})
+            res.send({ message: 'Update error' })
         })
 }
 
 exports.delete = (req, res) => {
     const id = req.params.id
-    
+
     Userdb.findByIdAndDelete(id)
         .then(data => {
-            if(!data) {
-                res.send({message: 'User not found'})
+            if (!data) {
+                res.send({ message: 'User not found' })
             }
             else {
-                res.send({message: 'Delete successfully'})
+                res.send({ message: 'Delete successfully' })
             }
         })
         .catch(e => {
-            res.send({message: 'Can not delete user with id: ' + id})
+            res.send({ message: 'Can not delete user with id: ' + id })
         })
 }
